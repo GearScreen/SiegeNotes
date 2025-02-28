@@ -9,16 +9,21 @@ import java.lang.reflect.InvocationTargetException;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.text.html.HTMLDocument.Iterator;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 
 public final class Gears {
     // constructor
@@ -28,23 +33,7 @@ public final class Gears {
 
     // #region UTILS
 
-    @SuppressWarnings("unchecked")
-    public static <T> T[] getArrayGeneric(Class<T> clazz, int length) {
-        return (T[]) Array.newInstance(clazz, length);
-    }
-
-    public static <T> T getInstanceGeneric(Class<T> clazz) {
-        try {
-            return clazz.getDeclaredConstructor().newInstance();
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException
-                | NoSuchMethodException e) {
-            throw new RuntimeException("Failed to create an instance of " + clazz.getName(), e);
-        }
-    }
-
-    public static <T1, T2> Pair<T1, T2> cPair(T1 one, T2 two) {
-        return new Pair<>(one, two);
-    }
+    // #region WEB
 
     public static void openLinkDefaultBrowser(String link) {
         try {
@@ -78,6 +67,36 @@ public final class Gears {
         }
     }
 
+    public static String sanitizeURL(String url) {
+        try {
+            URI uri = new URI(url);
+            String scheme = uri.getScheme();
+            if (scheme == null || (!scheme.equals("http") && !scheme.equals("https"))) {
+                throw new URISyntaxException(url, "Invalid URL scheme");
+            }
+            return uri.toString();
+        } catch (URISyntaxException e) {
+            System.err.println("Invalid URL: " + e.getMessage());
+            return null;
+        }
+    }
+
+    // #endregion
+
+    @SuppressWarnings("unchecked")
+    public static <T> T[] getArrayGeneric(Class<T> clazz, int length) {
+        return (T[]) Array.newInstance(clazz, length);
+    }
+
+    public static <T> T getInstanceGeneric(Class<T> clazz) {
+        try {
+            return clazz.getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException
+                | NoSuchMethodException e) {
+            throw new RuntimeException("Failed to create an instance of " + clazz.getName(), e);
+        }
+    }
+
     public static class Pair<T1, T2> {
         public T1 elem1;
         public T2 elem2;
@@ -88,12 +107,19 @@ public final class Gears {
         }
     }
 
+    public static <T1, T2> Pair<T1, T2> cPair(T1 one, T2 two) {
+        return new Pair<>(one, two);
+    }
+
     public static boolean stringIsNullOrEmpty(String string) {
         return string == "" || string == null;
     }
 
+    // #region String / Char
+
     // Offset Method
-    public static <T1 extends Iterable<T2>, T2> String insertManyStrings(Boolean replaceAtLocation, String mainString, T1 insertlist,
+    public static <T1 extends Iterable<T2>, T2> String insertManyStrings(Boolean replaceAtLocation, String mainString,
+            T1 insertlist,
             Func<T2, Pair<Integer, String>> getStringInfo) {
         int startLength = mainString.length();
         Integer offset = 0;
@@ -149,6 +175,20 @@ public final class Gears {
         return sb.toString();
     }
 
+    public static List<Integer> getAllLineBreakIndexes(String string) {
+        List<Integer> indexes = new ArrayList<>();
+
+        for (int i = 0; i < string.length(); i++) {
+            if (string.charAt(i) == '\n') {
+                indexes.add(i);
+            }
+        }
+
+        return indexes;
+    }
+
+    // #endregion
+
     // To Create Beans
     public static class Container<T> {
         private T value;
@@ -201,7 +241,6 @@ public final class Gears {
         return false;
     }
 
-    // TODO Return Count
     public static <T1 extends Iterable<T2>, T2> T2 findIn(T1 iterable, T2 toFind) {
         int count = 0;
 
@@ -225,6 +264,34 @@ public final class Gears {
         }
 
         return list;
+    }
+
+    public static <T1 extends Iterable<T2>, T2> Integer countElementCondition(T1 iterable,
+            Func<T2, Boolean> condition) {
+        Integer count = 0;
+
+        for (T2 element : iterable) {
+            if (condition.call(element)) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    public static <T1 extends Iterable<T2>, T2> Integer countElementUntilCondition(T1 iterable,
+            Func<T2, Boolean> condition) {
+        Integer count = 0;
+
+        for (T2 element : iterable) {
+            if (condition.call(element)) {
+                return count;
+            }
+
+            count++;
+        }
+
+        return count;
     }
 
     // #endregion
@@ -311,17 +378,36 @@ public final class Gears {
         }
     }
 
-    public static JSONObject readJsonFile(String path) {
-        try {
-            // Read file as String
-            String content = new String(Files.readAllBytes(Paths.get(path)));
+    public static JSONObject readJsonFile(String resourcePath) {
+        try (InputStream inputStream = Gears.class.getClassLoader().getResourceAsStream(resourcePath)) {
+            if (inputStream == null) {
+                System.err.println("Resource not found: " + resourcePath);
+                return null;
+            }
 
-            // Print JSON Object
-            // System.out.println(jsonObject.toString(4)); // Pretty print with indentation
+            // Read the InputStream as a String
+            String content = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
 
             // Convert to JSONObject
             return new JSONObject(content);
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static JSONObject readJsonFileFromFileSystem(String filePath) {
+        try {
+            // Read the file content as a byte array
+            byte[] fileBytes = Files.readAllBytes(Paths.get(filePath));
+
+            // Convert the byte array to a String
+            String content = new String(fileBytes, StandardCharsets.UTF_8);
+
+            // Convert the String to a JSONObject
+            return new JSONObject(content);
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -342,6 +428,15 @@ public final class Gears {
         }
 
         return filePath;
+    }
+
+    public static boolean isValidFilePath(String path) {
+        try {
+            Path filePath = Paths.get(path);
+            return Files.exists(filePath);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     // #endregion

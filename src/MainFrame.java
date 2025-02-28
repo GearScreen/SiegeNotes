@@ -1,16 +1,14 @@
 import gears.Gears.*;
-import static gears.Gears.cPair;
+import static gears.Gears.*;
 
-import java.util.Arrays;
+import static app.App.*;
+import static app.FrontApp.*;
 
 import javax.swing.*;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.net.URL;
+import java.awt.event.*;
+import java.util.Arrays;
 
 public class MainFrame extends JFrame {
     public static void Frame() {
@@ -18,25 +16,65 @@ public class MainFrame extends JFrame {
     }
 
     public void init() {
-        URL scriptPath = getClass().getResource("/resource");
-        System.out.println(scriptPath.toString());
+        // Panes :
+        // Center :
+        // Text Pane
+        textPane = new JTextPane();
+        textPane.setFont(textAreaFont);
+        doc = textPane.getStyledDocument();
 
-        // ###ELEMENTS
-        // TextPane
-        JTextPane textPane = new JTextPane();
-        textPane.setContentType("text/html");
+        JScrollPane scroll = new JScrollPane(textPane);
 
-        // Buttons Panel
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(App.createJButton("Button 1", onClick -> System.out.println("Button 1 clicked")));
-        buttonPanel.add(App.createJButton("Button 2", onClick -> System.out.println("Button 2 clicked")));
+        // North :
+        // Button Panel TOP
+        tabsPanel = cTabPanel();
 
-        // Main Panel
-        JPanel mainPanel = App.addComponentsToJPanelLayout(App.createPanel(new BorderLayout(), 5, new Color(50, 50, 255)),
-        Arrays.asList(cPair(textPane, BorderLayout.CENTER), cPair(buttonPanel, BorderLayout.NORTH)));
+        // BOT
+        // Menu Bar
+        JMenuBar menuBar = menuBar(this);
+
+        // Button Panel BOT
+        JPanel buttonPanelMenu = cJPanel(new FlowLayout(FlowLayout.LEFT), 0, defaultColor,
+                Arrays.asList(menuBar));
+
+        // Main ButtonPanel Wrap Top + Bot
+        JPanel buttonPanel = cJPanel(new GridLayout(2, 2), 0, Color.WHITE,
+                Arrays.asList(tabsPanel, menuBar));
+
+        // #region Callbacks
+
+        // OnClick
+        textPane.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+
+            }
+        });
+
+        // OnKeyPress
+        textPane.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent keyEvent) {
+                // CTRL + S -> Save file
+                if (keyEvent.getKeyCode() == KeyEvent.VK_S && keyEvent.isControlDown()) {
+                    saveFile(siegeConverterSave());
+                }
+
+                // CTRL + L -> Insert Link
+                if (keyEvent.getKeyCode() == KeyEvent.VK_L && keyEvent.isControlDown()) {
+                    insertLinkWindow(MainFrame.this);
+                }
+            }
+        });
+
+        // #endregion
+
+        // Main Panel / Layout :
+        JPanel mainPanel = addComponentsToJPanelLayout(cJPanel(new BorderLayout(), 0, Color.BLACK),
+                Arrays.asList(cPair(scroll, BorderLayout.CENTER), cPair(buttonPanel, BorderLayout.NORTH)));
 
         // Frame Setup + Display
-        App.InitFrame(this, "SiegeNotes", App.darktide_Icon_Path, new Component[] { mainPanel }, new Vector2Int(1200, 650),
-                new Vector2Int(300, 300));
+        InitFrame(this, "Siege Notes", icon_Path, new Component[] { mainPanel },
+                new Vector2Int(1200, 650), new Vector2Int(300, 300));
     }
 }

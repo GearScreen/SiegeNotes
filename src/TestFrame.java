@@ -1,12 +1,11 @@
 import gears.Gears;
-import gears.Gears.Out;
-import gears.Gears.Pair;
-import gears.Gears.Vector2Int;
-import static gears.Gears.cPair;
+import gears.Gears.*;
+import static gears.Gears.*;
+
+import static app.App.*;
+import static app.FrontApp.*;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.filechooser.FileSystemView;
 import javax.swing.text.*;
 
 import org.json.JSONArray;
@@ -14,19 +13,15 @@ import org.json.JSONArray;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+// TESTED FONTS : Noto Color Emoji, EmojiOne, Twemoji, Symbola, AppleColor Emoji
+
 public class TestFrame extends JFrame {
+    public static final Font oldFont = new Font("Monospaced", Font.BOLD, 18);
     // public Component linkLabelTest;
 
     public static void Frame() {
@@ -45,17 +40,17 @@ public class TestFrame extends JFrame {
 
         // First Name Field
         JLabel lbFirstName = new JLabel("First Name Reject");
-        lbFirstName.setFont(App.oldFont);
+        lbFirstName.setFont(oldFont);
 
         tfFirstName = new JTextField();
-        tfFirstName.setFont(App.oldFont);
+        tfFirstName.setFont(oldFont);
 
         // Last Name Field
         JLabel lbLastName = new JLabel("Last Name Servitor");
-        lbLastName.setFont(App.oldFont);
+        lbLastName.setFont(oldFont);
 
         tfLastName = new JTextField();
-        tfLastName.setFont(App.oldFont);
+        tfLastName.setFont(oldFont);
 
         // Form Panel
         JPanel formPanel = new JPanel();
@@ -68,11 +63,11 @@ public class TestFrame extends JFrame {
 
         // Label
         lbTest = new JLabel();
-        lbTest.setFont(App.oldFont);
+        lbTest.setFont(oldFont);
 
         // Button OK
         JButton btnOk = new JButton("OK");
-        btnOk.setFont(App.oldFont);
+        btnOk.setFont(oldFont);
         btnOk.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -84,7 +79,7 @@ public class TestFrame extends JFrame {
 
         // Button CLEAR
         JButton btnClear = new JButton("CLEAR");
-        btnClear.setFont(App.oldFont);
+        btnClear.setFont(oldFont);
         btnClear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -115,7 +110,7 @@ public class TestFrame extends JFrame {
         add(mainPanel);
 
         // Properies
-        URL imgURL = getClass().getResource(App.darktide_Icon_Path);
+        URL imgURL = getClass().getResource(icon_Path);
         setIconImage(new ImageIcon(imgURL, "Icon").getImage());
         setTitle("Hive Tertium");
         setSize(500, 600);
@@ -206,15 +201,14 @@ public class TestFrame extends JFrame {
         // ###PANELS
         Runnable testPanelRun = () -> {
             // Text Panel
-            JPanel textPanePanel = App.addComponentsToJPanel(
-                    App.createPanel(new GridLayout(4, 1, 5, 5), 10, getForeground()),
+            JPanel textPanePanel = cJPanel(new GridLayout(4, 1, 5, 5), 10, getForeground(),
                     Arrays.asList(clickableLabel, scroll));
 
             textPanePanel.setSize(500, 500);
             textPanePanel.setOpaque(false);
 
             // Test Panel
-            App.addComponentsToJPanelLayout(App.createPanel(new GridLayout(1, 1), 20, getForeground()),
+            addComponentsToJPanelLayout(cJPanel(new GridLayout(1, 1), 20, getForeground()),
                     Arrays.asList(cPair(textPanePanel, BorderLayout.CENTER), cPair(clickableLabel, null)));
         };
         // testPanelRun.run();
@@ -231,16 +225,16 @@ public class TestFrame extends JFrame {
 
             // System.out.println("Components : " + textPane.getComponents());
 
-            for (Component comp : App.textPane.getComponents()) {
+            for (Component comp : textPane.getComponents()) {
                 System.out.println("Remove Comp : " + comp);
-                App.textPane.remove(comp);
+                textPane.remove(comp);
             }
         };
         // r2.run();
 
         // Remove the component from the document
         Runnable r1 = () -> {
-            Element root = App.doc.getDefaultRootElement();
+            Element root = doc.getDefaultRootElement();
 
             for (int i = 0; i < root.getElementCount(); i++) {
                 Element elem = root.getElement(i);
@@ -249,9 +243,9 @@ public class TestFrame extends JFrame {
 
                 System.out.println("Elem : " + elem);
 
-                if (comp == App.labelLinkList.get(0).comp) {
+                if (comp == getCurrentLabelList().get(0).comp) {
                     try {
-                        App.doc.remove(elem.getStartOffset(), elem.getEndOffset() - elem.getStartOffset());
+                        doc.remove(elem.getStartOffset(), elem.getEndOffset() - elem.getStartOffset());
                         break;
                     } catch (BadLocationException ex) {
                         ex.printStackTrace();
@@ -272,8 +266,7 @@ public class TestFrame extends JFrame {
 
         // Create and Insert component at location
         Runnable r3 = () -> {
-            var linkLabelTest = App.createLinkLabel("Link Label", "https://google.com");
-            App.insertComponentAt(linkLabelTest, 250);
+            cLinkLabel("Link Label", "https://google.com", 250);
         };
         // r3.run();
 
@@ -312,9 +305,9 @@ public class TestFrame extends JFrame {
         Runnable r7 = () -> {
             // System.out.println("Doc Length : " + textPane.getDocument().getLength());
             // System.out.println("Text Length : " + textPane.getText().length());
-            String convertedText = App.siegeConverterSave();
+            String convertedText = siegeConverterSave();
             System.out.println("Convertion!!!! : " + convertedText);
-            App.saveFile(convertedText);
+            saveFile(convertedText);
         };
         // r7.run();
 
@@ -342,7 +335,7 @@ public class TestFrame extends JFrame {
             // System.out.println("Should be 14 : " + App.labelCodeOpen.length());
             // System.out.println("text length : " + textPane.getText().length() + " doc
             // Length : " + doc.getLength());
-            App.siegeConverterLoad();
+            siegeConverterLoad();
         };
         // r9.run();
 
@@ -373,19 +366,57 @@ public class TestFrame extends JFrame {
 
         // Test Tab
         Runnable r13 = () -> {
-            System.out.println(App.getCurrentTabButton().getText());
-            App.closeTab(App.tabs.size() - 1);
+            System.out.println(getCurrentTabButton().getText());
+            closeTab(tabs.size() - 1);
         };
-        //r13.run();
+        // r13.run();
 
         // Test Tab
         Runnable r14 = () -> {
-            App.getAllLinkLabelsInDocument();
-        };
-        r14.run();
+            // App.getAllLinkLabelsInDocument();
+            System.out.println(Gears.sanitizeURL("https://google.com"));
+            String filePath = "E:\\Dev\\Java\\SiegeNotes\\src\\Test.txt";
+            System.out.println(filePath + "Is Valid File Path : " + Gears.isValidFilePath(filePath));
 
-        App.textPane.revalidate();
-        App.textPane.repaint();
+            // Get All Fonts
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            Font[] allFonts = ge.getAllFonts();
+            for (Font font : allFonts) {
+                System.out.println("Font : " + font.getFontName());
+                if (font.getFontName().contains("Segoe UI Emoji")) {
+                    System.out.println("Segoe Found");
+                }
+            }
+        };
+        // r14.run();
+
+        // Test Tab
+        Runnable r15 = () -> {
+            String test = "TESTT TTETETTST fezerfgrzgegee\r\n" + //
+                    "ergergergeeg\r\n" + //
+                    "ergergergeegeeeegeSAVE1***labelTitle:Google, labelLink:https://google.com***";
+
+            System.out.println("Text Length : " + test.length());
+            System.out.println("Label Found at : " + test.indexOf(labelCodeOpen, 0));
+
+            //textPane.setText(test);
+
+            //System.out.println("Doc Length : " + doc.getLength());
+            //System.out.println("Doc OffSet : " + (test.length() - doc.getLength()));
+
+            // -> The Differrence between DOC And TEXT comes from the \r\n
+
+            //System.out.println("Line Break found at : " + test.indexOf("\\r\\n", 0)); // -> -1
+            System.out.println("Line Break found at : " + test.indexOf("\n", 0)); // -> Works
+
+            var list = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+            System.out.println("Count Element Condition Test : " + countElementCondition(list, i -> i % 2 == 0));
+            System.out.println("Count Element UNTIL Condition Test : " + countElementUntilCondition(list, i -> i == 5));
+        };
+        r15.run();
+
+        textPane.revalidate();
+        textPane.repaint();
     }
 
     public static void backWindows() {
@@ -396,12 +427,12 @@ public class TestFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // On Click
-                lastWindow.param = App.smallWindow(lastWindow.param, "Back Window",
+                lastWindow.param = smallWindow(lastWindow.param, "Back Window",
                         Arrays.asList(openNewWindowButton));
             }
         });
 
-        lastWindow.param = App.smallWindow(App.mainFrame, "Back Window",
+        lastWindow.param = smallWindow(mainFrame, "Back Window",
                 Arrays.asList(openNewWindowButton));
     }
 
@@ -411,44 +442,43 @@ public class TestFrame extends JFrame {
         // Panes :
         // Center :
         // Text Pane
-        App.textPane = new JTextPane();
-        App.doc = App.textPane.getStyledDocument();
+        textPane = new JTextPane();
+        // setupTextAreaFont();
+        textPane.setFont(textAreaFont);
+        doc = textPane.getStyledDocument();
 
-        JScrollPane scroll = new JScrollPane(App.textPane);
+        JScrollPane scroll = new JScrollPane(textPane);
 
         // Open file
         // textPane.setText(Gears.readTextFileCombined(getCurrentFilePath()));
 
         // North :
         // Button Panel TOP
-        App.tabsPanel = App.addComponentsToJPanel(App.createPanel(new FlowLayout(), 0, Color.gray),
-                Arrays.asList(
-                        // App.tab(0, "Tab 0"), //Test default tab
-                        App.createJButton("+ Tab", mouseEvent -> {
-                            App.newTab();
-                        })));
+        tabsPanel = cTabPanel();
 
         // BOT
-        JButton openFileButton = App.createOpenFileButton(this);
+        JButton openFileButton = cJButton("Open File...", defaultColor, clickEvent -> {
+            fileExplorerOpenFile();
+        });
 
-        JButton addTestLinkButton = App.createJButton("Add Test Links", clickEvent -> {
+        JButton addTestLinkButton = cJButton("Add Test Links", clickEvent -> {
             System.out.println("Add test Link");
 
-            App.insertTextWithCallBackOnClick(callBackMap, App.getLinkStyle(), "Google", () -> {
+            insertTextWithCallBackOnClick(callBackMap, getLinkStyle(), "Google", () -> {
                 Gears.openLinkDefaultBrowser("https://google.com");
             });
-            App.insertInDoc(App.doc.getLength(), " | ", null);
-            App.insertTextWithCallBackOnClick(callBackMap, App.getLinkStyle(), "GitHub",
+            insertInDoc(doc.getLength(), " | ", null);
+            insertTextWithCallBackOnClick(callBackMap, getLinkStyle(), "GitHub",
                     () -> Gears.openLinkDefaultBrowser("https://www.github.com"));
-            App.insertInDoc(App.doc.getLength(), " | ", null);
-            App.insertTextWithCallBackOnClick(callBackMap, App.getLinkStyle(), "StackOverflow",
+            insertInDoc(doc.getLength(), " | ", null);
+            insertTextWithCallBackOnClick(callBackMap, getLinkStyle(), "StackOverflow",
                     () -> Gears.openLinkDefaultBrowser("https://stackoverflow.com"));
 
-            App.testLink(App.doc.getLength() - 1);
+            testLink(doc.getLength() - 1);
         });
 
         // /!\ Self Destruction Button /!\
-        JButton selfDestructionButton = App.createJButton("/!\\ Self Destruction 🗿 🐒", Color.red, clickEvent -> {
+        JButton selfDestructionButton = cJButton("/!\\ Self Destruction 🗿 🐒", Color.red, clickEvent -> {
             // System.out.println("Button clicked");
 
             // Remove Components :
@@ -464,46 +494,48 @@ public class TestFrame extends JFrame {
         });
 
         // Back Windows Button 💀
-        JButton backWindowsButton = App.createJButton("Back Windows 💀", Color.DARK_GRAY, clickEvent -> {
+        JButton backWindowsButton = cJButton("Back Windows 💀", Color.DARK_GRAY, clickEvent -> {
             System.out.println("Back Windows $$ffzglb^ç-");
             backWindows();
         });
         backWindowsButton.setForeground(Color.red);
 
         // Test Button
-        JButton testButton = App.createJButton("🪵 Test Button 🪵", clickEvent -> {
+        JButton testButton = cJButton("🪵 Test Button 🪵", clickEvent -> {
             // System.out.println("TestButton clicked");
             testFunc();
         });
 
         // Create Link Button
-        JButton createLinkButton = App.createJButton("Insert Link...", clickEvent -> {
+        JButton createLinkButton = cJButton("Insert Link...", clickEvent -> {
             System.out.println("Create Link...");
 
-            App.insertLinkWindow(this);
+            insertLinkWindow(this);
         });
 
+        // Menu Bar
+        JMenuBar menuBar = menuBar(this);
+
         // Button Panel BOT
-        JPanel buttonPanelMenu = App.addComponentsToJPanel(
-                App.createPanel(new FlowLayout(FlowLayout.LEFT), 0, App.defaultColor),
+        JPanel buttonPanelMenu = cJPanel(new FlowLayout(FlowLayout.LEFT), 0, defaultColor,
                 Arrays.asList(openFileButton, addTestLinkButton, testButton, selfDestructionButton, backWindowsButton,
-                        createLinkButton));
+                        createLinkButton, menuBar));
 
         // Main ButtonPanel Wrap Top + Bot
-        JPanel buttonPanel = App.addComponentsToJPanel(App.createPanel(new GridLayout(2, 2), 0, Color.WHITE),
-                Arrays.asList(App.tabsPanel, buttonPanelMenu));
+        JPanel buttonPanel = cJPanel(new GridLayout(2, 2), 0, Color.WHITE,
+                Arrays.asList(tabsPanel, buttonPanelMenu));
 
         // Callbacks :
         // OnClick
-        App.textPane.addMouseListener(new MouseAdapter() {
+        textPane.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
-                App.triggerCallBack(mouseEvent, callBackMap);
+                triggerCallBack(mouseEvent, callBackMap);
             }
         });
 
         // OnKeyPress
-        App.textPane.addKeyListener(new KeyAdapter() {
+        textPane.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent keyEvent) {
                 // System.out.println("Key pressed: " + keyEvent.getKeyChar());
@@ -515,18 +547,18 @@ public class TestFrame extends JFrame {
                 if (keyEvent.getKeyCode() == KeyEvent.VK_E && keyEvent.isControlDown()) {
                     System.out.println("CTRL + E was pressed");
                     // Selector pos
-                    App.textPane.setCaretPosition(250);
+                    textPane.setCaretPosition(250);
                 }
 
                 // Save file
                 if (keyEvent.getKeyCode() == KeyEvent.VK_S && keyEvent.isControlDown()) {
-                    // App.saveFile(textPane.getText());
-                    App.saveFile(App.siegeConverterSave());
+                    // saveFile(textPane.getText());
+                    saveFile(siegeConverterSave());
                 }
 
                 // Insert Link
                 if (keyEvent.getKeyCode() == KeyEvent.VK_L && keyEvent.isControlDown()) {
-                    App.textPane.insertComponent(App.createLinkLabel("Link Label", "https://google.com"));
+                    cLinkLabel("Link Label", "https://google.com", textPane.getCaretPosition());
                 }
             }
 
@@ -553,18 +585,47 @@ public class TestFrame extends JFrame {
                 }
             };
 
-            App.textPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-                    .put(KeyStroke.getKeyStroke(KeyEvent.VK_CONTROL, 0, false), "control pressed");
-            App.textPane.getActionMap().put("control pressed", controlAction);
+            textPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+                    .put(KeyStroke.getKeyStroke(KeyEvent.VK_CONTROL, 0, false),
+                            "control pressed");
+            textPane.getActionMap().put("control pressed", controlAction);
         };
         // controlA.run();
 
         // Main Panel / Layout :
-        JPanel mainPanel = App.addComponentsToJPanelLayout(App.createPanel(new BorderLayout(), 0, Color.BLACK),
+        JPanel mainPanel = addComponentsToJPanelLayout(cJPanel(new BorderLayout(), 0, Color.BLACK),
                 Arrays.asList(cPair(scroll, BorderLayout.CENTER), cPair(buttonPanel, BorderLayout.NORTH)));
 
         // Frame Setup + Display
-        App.InitFrame(this, "Siege Notes Test Window", App.darktide_Icon_Path, new Component[] { mainPanel },
+        InitFrame(this, "Siege Notes Test Window", icon_Path, new Component[] { mainPanel },
                 new Vector2Int(1200, 650), new Vector2Int(300, 300));
     }
+
+    // #region OldApp
+
+    // only parameter style can be null
+    public static void insertTextWithCallBackOnClick(Map<Vector2Int, Runnable> callBackMap,
+            AttributeSet style, String text, Runnable callBack) {
+        callBackMap.put(new Vector2Int(doc.getLength(), text.length()), callBack);
+
+        insertInDoc(doc.getLength(), text, style);
+    }
+
+    public static void triggerCallBack(MouseEvent mouseEvent, Map<Vector2Int, Runnable> callBackMap) {
+        int mouseCharPosition = textPane.viewToModel2D(mouseEvent.getPoint());
+        // System.out.println("Character clicked : " + mouseCharPosition);
+
+        for (Map.Entry<Vector2Int, Runnable> entry : callBackMap.entrySet()) {
+            int charStart = entry.getKey().x;
+            int charNbr = entry.getKey().y;
+            Runnable callBack = entry.getValue();
+
+            // Text Clicked
+            if (callBack != null && charStart <= mouseCharPosition && mouseCharPosition < charStart + charNbr) {
+                callBack.run();
+            }
+        }
+    }
+
+    // #endregion
 }
