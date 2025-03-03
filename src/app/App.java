@@ -443,9 +443,9 @@ public class App {
     public static String getConfigFilePath() {
         if (configFilePath == "") {
             String projectPath = System.getProperty("user.dir");
-            File projectDir = new File(projectPath);
-            String parentPath = projectDir.getParent(); // Navigate up one directory level
-            String fullPath = parentPath + File.separator + "siegeNoteConfig.json";
+            //File projectDir = new File(projectPath);
+            //String parentPath = projectDir.getParent(); // Navigate up one directory level
+            String fullPath = projectPath + File.separator + "siegeNoteConfig.json";
             configFilePath = fullPath;
         }
 
