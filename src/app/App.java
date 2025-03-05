@@ -445,7 +445,7 @@ public class App {
             String projectPath = System.getProperty("user.dir");
             //File projectDir = new File(projectPath);
             //String parentPath = projectDir.getParent(); // Navigate up one directory level
-            String fullPath = projectPath + File.separator + "siegeNoteConfig.json";
+            String fullPath = projectPath + File.separator + "siegeNotesConfig.json";
             configFilePath = fullPath;
         }
 

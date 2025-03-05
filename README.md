@@ -2,6 +2,8 @@
 
 SiegeNotes is a custom text editor made with Java Swing. It provides a user-friendly interface for creating, editing, and managing text files. The application supports multiple tabs and create "hyperlinks".
 
+![Siege Notes Image](SiegeNotesPres.png)
+
 ## Features
 
 - Multiple tabs for managing different text files
